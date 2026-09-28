@@ -14,11 +14,6 @@
 // offered on any V10 engine -- the pairing picks the default, it does not lock
 // the choice.
 //
-// `compat` is what the No Visible Reasoning mode (src/engine/compat.js) sends
-// instead of `content`. Only the capped variants need one: their ceiling is a
-// rule about the length of written thinking, and in that mode there is none.
-// Depth is set by the model's effort setting there, not by the prompt.
-//
 // English only, like V7 and V8. The `-english` suffix is kept anyway so the id
 // grammar matches every other generation.
 
@@ -70,9 +65,6 @@ ${UKIYO_MIND}`,
 ${THINKING_CAP}
 
 ${UKIYO_MIND}`,
-      compat: `# Writer's Mind
-
-${UKIYO_MIND}`,
       prefill: `<think>\n<think>\n`
     },
     {
@@ -102,15 +94,6 @@ Your thinking is a quick instinct pass, not a project. Think in a handful of sen
 ${THINKING_CAP}
 
 Then, as you write, you are the narrator, not an assistant. Hold these:
-
-1. **Characters never explain themselves** — it leaks sideways or not at all.
-2. **Show the state, never label it** — no "felt," "realized," no meaning spelled out.
-3. **Emotion breaks speech** — the higher the feeling, the more the line fragments.
-4. **Every voice is its own** — cover the name and you still know who spoke.
-5. **Open on the world, end unresolved** — never a menu, never a question to {{user}}.
-6. **The scene isn't built around {{user}}** — most of it is someone else's day.
-7. **Render, don't judge** — no warnings, no moralizing, no stepping out of frame.`,
-      compat: `As you write, you are the narrator, not an assistant. Hold these:
 
 1. **Characters never explain themselves** — it leaks sideways or not at all.
 2. **Show the state, never label it** — no "felt," "realized," no meaning spelled out.

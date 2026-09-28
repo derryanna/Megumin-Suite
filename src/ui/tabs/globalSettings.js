@@ -86,15 +86,6 @@ export function renderGlobalSettings(c) {
             <div class="ps-switch" style="${gs.enableUtilityPrefill ? 'background: #10b981;' : ''}"></div>
         </div>
     `);
-    $content.append(`
-        <div class="mtab-toggle-row ${gs.noVisibleReasoning ? 'active' : ''}" id="gs_toggle_no_visible_reasoning" style="cursor: pointer;">
-            <div class="toggle-info">
-                <div class="toggle-label"><i class="fa-solid fa-eye-slash" style="color: #38bdf8;"></i> No Visible Reasoning</div>
-                <div class="toggle-desc">For models that refuse to write their thinking into the reply (Claude Opus 5.5, Fable). The Chain of Thought becomes criteria for the finished reply instead of a &lt;think&gt; block, every prefill is dropped, and background jobs ask for their output only — their Thinking Instructions are skipped. Output formats do not change. The model still thinks, just not on the page.</div>
-            </div>
-            <div class="ps-switch" style="${gs.noVisibleReasoning ? 'background: #38bdf8;' : ''}"></div>
-        </div>
-    `);
 
     // ── DATA ────────────────────────────────────────────────────────────────
     $content.append(`<div class="wstyle-section-head gold" style="margin-top:8px;"><i class="fa-solid fa-floppy-disk"></i> Data</div>`);
@@ -175,7 +166,6 @@ export function renderGlobalSettings(c) {
     };
     wireToggle("#gs_toggle_prompt_preview", "promptPreview", "var(--gold)");
     wireToggle("#gs_toggle_utility_prefill", "enableUtilityPrefill", "#10b981");
-    wireToggle("#gs_toggle_no_visible_reasoning", "noVisibleReasoning", "#38bdf8");
 
     $content.find("#gs_save_mode").on("change", function () {
         // getCharacterKey() reads saveMode, so changing it moves where a save lands. Get any

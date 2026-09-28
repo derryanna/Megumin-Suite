@@ -1,29 +1,29 @@
 // ─────────────────────────────────────────────────────────────────────────────
-// No Visible Reasoning — the compatibility mode.
+// No Visible Reasoning.
 //
 // Some models (Claude Opus 5.5, the Fable class) decline a request that asks
 // them to write their reasoning into the reply: the API answers with a refusal
 // (category "reasoning_extraction"), and many proxies pass that on as a plain
-// 400. Those models always think internally anyway, so nothing is lost by not
-// asking for the thinking in the text.
-//
-// When the Global Settings toggle is on:
-//   - the roleplay prompt gets the chain of thought as criteria for the finished
-//     reply instead of a <think> block to fill in, and no prefill;
+// 400. Those models always think internally anyway, and every other model
+// works just as well from a checklist, so this fork never asks for written
+// thinking:
+//   - the roleplay prompt gets each engine's Chain of Thought rewritten as a
+//     checklist for the finished reply (data/cot/checklists.js), in a short
+//     frame, instead of a <think> block to fill in, and no prefill;
 //   - every background job (Story Director, Ban List, Image Gen, NPC portrait,
 //     NPC scan, NPC update, memory summary) drops its "Thinking Instructions"
 //     and its prefill, and gets a single line that says what the reply contains.
 //
 // The output formats themselves (<directive>, <New_NPC>, <NPC_Update>, the
 // <Blocks> envelope, raw image prompts) are unchanged, so every parser keeps
-// working. Off by default: nothing changes for anyone who does not turn it on.
+// working.
 // ─────────────────────────────────────────────────────────────────────────────
 
-import { extension_settings } from "../st.js";
-import { extensionName } from "../core/constants.js";
-
+// Always on in this fork: the checklists work on every model, so there is no
+// switch. Kept as a function so the upstream code paths stay readable and
+// merges from upstream stay small.
 export function noVisibleReasoning() {
-    return extension_settings[extensionName]?.globalSettings?.noVisibleReasoning === true;
+    return true;
 }
 
 // Replaces the Thinking Tags wrapper. {Thinking} is where the engine's chain of

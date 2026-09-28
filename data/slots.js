@@ -20,7 +20,6 @@
 
 import { addons, blocks, models, modes } from "./database.js";
 import { isCoWriterEngine } from "../src/core/engines.js";
-import { COMPAT_THINK_WRAPPER } from "../src/engine/compat.js";
 
 const addonText = id => addons.find(a => a.id === id)?.content || "";
 const blockText = id => blocks.find(b => b.id === id)?.content || "";
@@ -134,15 +133,6 @@ export const MEGUMIN_SLOT_REGISTRY = [
       gate: GATE.think,
       hint: "The tags the reasoning is wrapped in. {Thinking} marks where the engine's Chain of Thought is dropped in — keep it, or the script has nowhere to go.",
       fallback: () => "<think>\n<think>\n<think>\n{Thinking}\n</think>" },
-    // The No Visible Reasoning pair (src/engine/compat.js). Only read while that
-    // Global Setting is on; otherwise both are blanked and nothing changes.
-    { key: "compatCot", trigger: "[[COT_NVR]]", label: "Checklist (No Visible Reasoning)", scope: "engine", group: "reasoning",
-      carrier: "think", gate: GATE.think,
-      hint: "Your checklist for this engine, used in place of its Chain of Thought while No Visible Reasoning is on. Write it as what the finished reply must satisfy. Leave empty to use the Chain of Thought itself, minus its think tags." },
-    { key: "thinkCompat", trigger: "[[THINK_NVR]]", label: "Checklist Frame (No Visible Reasoning)", scope: "shared", group: "reasoning",
-      gate: GATE.think,
-      hint: "Replaces the Thinking Tags while No Visible Reasoning is on. {Thinking} marks where the checklist goes. Keep it about the finished reply: asking for the checking to be written out is exactly what those models refuse.",
-      fallback: () => COMPAT_THINK_WRAPPER },
 
     // ── Shared fragments: one value, every engine ────────────────────────────
     { key: "death", trigger: "[[death]]", label: "Death System", scope: "shared", group: "systems",

@@ -1,27 +1,21 @@
 > [!NOTE]
-> **This is a fork** of [Megumin Suite](https://github.com/Arif-salah/Megumin-Suite) by Arif-salah (KazumaONIISAN), shared under the same [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) terms. Everything below is the original README. The only change is one opt-in setting, described here.
+> **This is a fork** of [Megumin Suite](https://github.com/Arif-salah/Megumin-Suite) by Arif-salah (KazumaONIISAN), shared under the same [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) terms. Everything below the note is the original README. What this fork changes is described here.
 >
-> ### No Visible Reasoning (compatibility mode)
+> ### Chain of Thought as a checklist
 >
-> Some newer models, such as Claude Opus 5.5 and the Fable class, decline requests that ask them to write their reasoning into the reply. The API returns a refusal (category `reasoning_extraction`), and many proxies pass it on as a generic 400. These models think internally anyway, so the fix is to stop asking for the thinking in the text.
+> Some newer models, such as Claude Opus 5.5 and the Fable class, decline requests that ask them to write their reasoning into the reply. The API returns a refusal (category `reasoning_extraction`), and many proxies pass it on as a generic 400. Megumin's engines asked for exactly that: a written thinking block before every reply, and a written analysis before every background job.
 >
-> **Global Settings → Behaviour → No Visible Reasoning** (off by default). When it is on:
+> In this fork, **each engine's Chain of Thought is rewritten as a checklist** for the finished reply. The engine's priorities stay the same, but the form is "what the scene must hold to" instead of steps to think or write out. The model knows what matters to the user and checks it on its own. This is always on and works the same on every model; there is no setting.
 >
-> - **Roleplay replies:** the engine's Chain of Thought is sent as criteria for the finished reply, not as a `<think>` block to fill in. The Thinking Tags wrapper, the profile's thinking word limit and the V10 "Thinking Cap" ceiling are skipped (depth is the model's effort setting's job here), the prefill is dropped, and the preset heading *"your thinking steps:"* becomes *"Scene criteria:"*.
-> - **Background jobs** (Story Director, Ban List, Image Gen, NPC portrait, NPC scan, NPC update, memory summary): their *Thinking Instructions* and prefills are skipped. Each job gets one line saying what its whole reply contains.
+> Rewritten: the V10 scripts (Ukiyo, Shura and their Cap versions), all five V9 (Mirage, Lite, Director, Immersion, Hybrid), both V8 (Fusion, standard), all three V7 (V7, V7.5, Lite), and V1/V2 English, the Chain of Thought that V4.2 Balance runs on. They live in `data/cot/checklists.js`; the original scripts are untouched.
+>
+> Also:
+> - **No prefills** anywhere, and the Thinking Tags wrapper isn't used. The preset heading *"your thinking steps:"* becomes *"Scene criteria:"*.
+> - **Background jobs** (Story Director, Ban List, Image Gen, NPC portrait, NPC scan, NPC update, memory summary) skip their *Thinking Instructions* and prefills. Each job gets one line saying what its whole reply contains.
 > - **Story Tracker:** the default template is reworded as state data instead of an "internal status report". A customised template is used as-is.
 > - **Output formats don't change.** `<directive>`, `<New_NPC>`, `<NPC_Update>`, the `<Blocks>` envelope and raw image prompts all stay the same, so every parser and card keeps working.
 >
-> **Bring your own checklist.** Many people use the Chain of Thought as a personal checklist, and everyone has their favourite engine. The mode keeps both. There are two ways to set it up:
->
-> - **In the engine (Dev Mode).** Each engine gets a **Checklist (No Visible Reasoning)** box, drawn right under its Chain of Thought. Write what the finished reply must satisfy; it is used instead of the Chain of Thought while the mode is on, and ignored when it is off. Leave it empty and the engine's own Chain of Thought is used, minus its think tags, its length rules and the V10 "Thinking Cap". The text around the checklist is the shared **Checklist Frame (No Visible Reasoning)** add-on, editable like Thinking Tags. Keep `{Thinking}` in it, and keep it about the finished reply, not about writing the checking out.
-> - **In your preset.** Keep your checklist in the preset and switch Megumin's Chain of Thought off. The mode then only drops the prefills and the "your thinking steps:" heading, and handles the background jobs.
->
-> Use one or the other. Both at once sends the checklist twice.
->
-> The shipped V10 scripts (Shura, Ukiyo and their Cap variants) work unchanged. The older V7–V9 scripts describe a writing process rather than a checklist: V9 Immersion still asks for a full draft first, and V9 Hybrid is a writers' room. They pass through with only the think tags and length rules removed and are untested in this mode. If you use one of those engines, give it a checklist in Dev Mode.
->
-> Nothing is sent differently when the setting is off.
+> Not rewritten yet: V6, the V1/V2 translations and other non-English scripts, and custom engines' own Chain of Thought. These go out as written, minus their think tags and length rules.
 
 <div align="center">
 

@@ -9,14 +9,17 @@ import { cot_v9 } from "./v9.js";
 import { cot_v8 } from "./v8.js";
 import { cot_v7 } from "./v7.js";
 import { cot_legacy } from "./legacy.js";
+import { CHECKLISTS } from "./checklists.js";
 
+// Each entry gets its checklist version (checklists.js) as `compat`, which
+// src/engine/compat.js sends in place of `content`.
 export const models = [
     ...cot_v10,
     ...cot_v9,
     ...cot_v8,
     ...cot_v7,
     ...cot_legacy,
-];
+].map(m => (m && CHECKLISTS[m.id] ? { ...m, compat: CHECKLISTS[m.id] } : m));
 
 /**
  * Which chain-of-thought an engine is written for.
