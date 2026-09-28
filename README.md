@@ -1,3 +1,21 @@
+> [!NOTE]
+> **This is a fork** of [Megumin Suite](https://github.com/Arif-salah/Megumin-Suite) by Arif-salah (KazumaONIISAN), shared under the same [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) terms. Everything below is the original README. The only change is one opt-in setting, described here.
+>
+> ### No Visible Reasoning (compatibility mode)
+>
+> Some newer models, such as Claude Opus 5.5 and the Fable class, decline requests that ask them to write their reasoning into the reply. The API returns a refusal (category `reasoning_extraction`), and many proxies pass it on as a generic 400. These models think internally anyway, so the fix is to stop asking for the thinking in the text.
+>
+> **Global Settings → Behaviour → No Visible Reasoning** (off by default). When it is on:
+>
+> - **Roleplay replies:** the engine's Chain of Thought is sent as criteria for the finished reply, not as a `<think>` block to fill in. The Thinking Tags wrapper and the thinking word limit are skipped, the prefill is dropped, and the preset heading *"your thinking steps:"* becomes *"Scene criteria:"*.
+> - **Background jobs** (Story Director, Ban List, Image Gen, NPC portrait, NPC scan, NPC update, memory summary): their *Thinking Instructions* and prefills are skipped. Each job gets one line saying what its whole reply contains.
+> - **Story Tracker:** the default template is reworded as state data instead of an "internal status report". A customised template is used as-is.
+> - **Output formats don't change.** `<directive>`, `<New_NPC>`, `<NPC_Update>`, the `<Blocks>` envelope and raw image prompts all stay the same, so every parser and card keeps working.
+>
+> The V10 engines (Shura, Ukiyo) already read as criteria and work well in this mode. The older V7–V9 "writer's room" scripts describe a drafting process rather than criteria. They still pass through, but a custom engine meant for these models can set its own `compatCot`: a criteria list used in place of its Chain of Thought when the mode is on.
+>
+> Nothing is sent differently when the setting is off.
+
 <div align="center">
 
 <img src="Screenshots/banner.png" alt="Megumin Suite Banner" width="100%">

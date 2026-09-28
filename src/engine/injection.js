@@ -24,6 +24,7 @@ import { npcBuildDossierPrompt } from "../features/npc/fields.js";
 import { escapeRegex } from "../utils/regex.js";
 import { buildBaseDict } from "./buildBaseDict.js";
 import { meguminAllSlotTriggers } from "../../data/slots.js";
+import { noVisibleReasoning, COMPAT_TASK_FORMAT, THINK_HEADING_RE, COMPAT_THINK_HEADING } from "./compat.js";
 
 // Throttles the prompt-preview popup so token counting and rapid ST background
 // triggers can't stack popups. Read and written only by the injection handler.
@@ -36,7 +37,10 @@ export async function handlePromptInjection(data, type) {
     // several other APIs, and the people it breaks for are the least likely to go
     // looking for a switch, so the safe state is the default. `!== true` also means
     // an install that has never seen the setting is off rather than on.
-    const disablePrefill = extension_settings[extensionName]?.globalSettings?.enableUtilityPrefill !== true;
+    // No Visible Reasoning mode (compat.js) turns every prefill off and swaps each
+    // job's Thinking Instructions for one line saying what the reply contains.
+    const compat = noVisibleReasoning();
+    const disablePrefill = compat || extension_settings[extensionName]?.globalSettings?.enableUtilityPrefill !== true;
 
     // --- INJECT STORY PLANNER PROMPT ---
     if (activeStoryPlanRequest) {
@@ -50,7 +54,8 @@ export async function handlePromptInjection(data, type) {
         const spCustom = sp.customPromptsEnabled ? sp.customPrompts : null;
         const sys = (spCustom && spCustom.systemPrompt) || DEFAULT_PROMPTS.storyPlan.systemPrompt;
         let userTask = (spCustom && spCustom.userPrompt) || DEFAULT_PROMPTS.storyPlan.userPrompt;
-        const thinking = (spCustom && spCustom.thinkingPrompt) || DEFAULT_PROMPTS.storyPlan.thinkingPrompt;
+        const thinking = compat ? COMPAT_TASK_FORMAT.storyPlan
+            : (spCustom && spCustom.thinkingPrompt) || DEFAULT_PROMPTS.storyPlan.thinkingPrompt;
 
         // Construct Director Settings
         let settingsStr = "DIRECTOR SETTINGS:\n";
@@ -108,7 +113,8 @@ export async function handlePromptInjection(data, type) {
         });
         messages.push({
             "role": "system",
-            "content": "Think deeply about who is missing from the known list, then output their dossiers sequentially."
+            "content": compat ? COMPAT_TASK_FORMAT.npcScan
+                : "Think deeply about who is missing from the known list, then output their dossiers sequentially."
         });
         if (!disablePrefill) {
             messages.push({
@@ -138,7 +144,8 @@ export async function handlePromptInjection(data, type) {
         });
         messages.push({
             "role": "system",
-            "content": "Think about which fields the story has actually moved, then output the block. Do not restate anything that is already correct on the record."
+            "content": compat ? COMPAT_TASK_FORMAT.npcUpdate
+                : "Think about which fields the story has actually moved, then output the block. Do not restate anything that is already correct on the record."
         });
         if (!disablePrefill) {
             messages.push({
@@ -157,7 +164,8 @@ export async function handlePromptInjection(data, type) {
         const banCustom = localProfile.banListCustomPromptsEnabled ? localProfile.banListCustomPrompts : null;
         const sys = (banCustom && banCustom.systemPrompt) || DEFAULT_PROMPTS.banList.systemPrompt;
         const userTask = (banCustom && banCustom.userPrompt) || DEFAULT_PROMPTS.banList.userPrompt;
-        const thinking = (banCustom && banCustom.thinkingPrompt) || DEFAULT_PROMPTS.banList.thinkingPrompt;
+        const thinking = compat ? COMPAT_TASK_FORMAT.banList
+            : (banCustom && banCustom.thinkingPrompt) || DEFAULT_PROMPTS.banList.thinkingPrompt;
 
         messages.push({ "role": "system", "content": sys });
         messages.push({ "role": "user", "content": userTask.replace('{{chatHistory}}', activeBanListChat) });
@@ -175,7 +183,8 @@ export async function handlePromptInjection(data, type) {
         const igCustom = localProfile.imageGen.customPromptsEnabled ? localProfile.imageGen.customPrompts : null;
         const sys = (igCustom && igCustom.systemPrompt) || DEFAULT_PROMPTS.imageGen.systemPrompt;
         const userTask = (igCustom && igCustom.userPrompt) || DEFAULT_PROMPTS.imageGen.userPrompt;
-        const thinking = (igCustom && igCustom.thinkingPrompt) || DEFAULT_PROMPTS.imageGen.thinkingPrompt;
+        const thinking = compat ? COMPAT_TASK_FORMAT.imageGen
+            : (igCustom && igCustom.thinkingPrompt) || DEFAULT_PROMPTS.imageGen.thinkingPrompt;
 
         // Ensure extra instructions format gracefully
         let extraSection = activeImageGenRequest.extraStr ? `Extra Instructions: ${activeImageGenRequest.extraStr}` : "";
@@ -227,7 +236,7 @@ export async function handlePromptInjection(data, type) {
         });
         messages.push({
             "role": "system",
-            "content": nbPrompts.thinkingPrompt
+            "content": compat ? COMPAT_TASK_FORMAT.npcPortrait : nbPrompts.thinkingPrompt
         });
         if (!disablePrefill) {
             messages.push({
@@ -349,6 +358,14 @@ export async function handlePromptInjection(data, type) {
             
             // Comprehensive Image Block Cleanup
             msg.content = msg.content.replace(/<img\s+[^>]*\/>|<div class="kazuma-img-placeholder"[^>]*>[\s\S]*?<\/div>|<!-- kazuma-inline-start:[^>]*-->[\s\S]*?<!-- kazuma-inline-end:[^>]*-->/gi, "");
+
+            // No Visible Reasoning: the preset's "your thinking steps:" heading
+            // becomes "Scene criteria:", or goes when nothing was put under it.
+            if (compat) {
+                msg.content = dict["[[THINK]]"]
+                    ? msg.content.replace(THINK_HEADING_RE, COMPAT_THINK_HEADING)
+                    : msg.content.replace(new RegExp(THINK_HEADING_RE.source + "\r?\n?", "gim"), "");
+            }
 
             // Final Sweep: Collapse 3 or more blank lines into a standard double line break
             msg.content = msg.content.replace(/(?:\r?\n[ \t]*){3,}/g, '\n\n');

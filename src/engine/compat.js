@@ -1,0 +1,84 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// No Visible Reasoning — the compatibility mode.
+//
+// Some models (Claude Opus 5.5, the Fable class) decline a request that asks
+// them to write their reasoning into the reply: the API answers with a refusal
+// (category "reasoning_extraction"), and many proxies pass that on as a plain
+// 400. Those models always think internally anyway, so nothing is lost by not
+// asking for the thinking in the text.
+//
+// When the Global Settings toggle is on:
+//   - the roleplay prompt gets the chain of thought as criteria for the finished
+//     reply instead of a <think> block to fill in, and no prefill;
+//   - every background job (Story Director, Ban List, Image Gen, NPC portrait,
+//     NPC scan, NPC update, memory summary) drops its "Thinking Instructions"
+//     and its prefill, and gets a single line that says what the reply contains.
+//
+// The output formats themselves (<directive>, <New_NPC>, <NPC_Update>, the
+// <Blocks> envelope, raw image prompts) are unchanged, so every parser keeps
+// working. Off by default: nothing changes for anyone who does not turn it on.
+// ─────────────────────────────────────────────────────────────────────────────
+
+import { extension_settings } from "../st.js";
+import { extensionName } from "../core/constants.js";
+
+export function noVisibleReasoning() {
+    return extension_settings[extensionName]?.globalSettings?.noVisibleReasoning === true;
+}
+
+// Replaces the Thinking Tags wrapper. {Thinking} is where the engine's chain of
+// thought lands, exactly as in the normal wrapper.
+export const COMPAT_THINK_WRAPPER =
+    "Hold the finished reply to the criteria below. They describe the scene you write; they are not a section to write out.\n\n"
+    + "{Thinking}\n\n"
+    + "Your reply is the scene itself, followed by the blocks these rules ask for, and nothing else.";
+
+// The preset's heading over [[THINK]]. Renamed in compat mode so the prompt no
+// longer asks for "thinking steps"; dropped when there is nothing under it.
+export const THINK_HEADING_RE = /^([ \t]*#+[ \t]*)your thinking steps:[ \t]*$/gim;
+export const COMPAT_THINK_HEADING = "$1Scene criteria:";
+
+// The engine chain-of-thought scripts were written to be filled in inside a
+// <think> block. The V10 ones already read as reminders; only the framing has
+// to go: the headings that call it a reasoning process, lines that set a
+// length or language for the written thinking, and any literal think tags.
+// The older multi-phase scripts (V7–V9 "writer's room", drafts) are processes,
+// not criteria — they pass through, but an engine meant for this mode should
+// carry a hand-adapted `compatCot` instead.
+export function compatCriteria(cot) {
+    if (!cot) return "";
+    return cot
+        .replace(/^([ \t]*#+[ \t]*)(THINKING|Reasoning Process)[ \t]*:?[ \t]*$/gim, "$1Criteria:")
+        .replace(/^([ \t]*)\[THINKING STEPS\]/gim, "$1[CRITERIA]")
+        .replace(/^[^\n]*(Minimum total thinking length|All thinking must be written in|Your Thinking must not be more than)[^\n]*\r?\n?/gim, "")
+        .replace(/^[ \t]*<\/?think>[ \t]*\r?\n?/gim, "")
+        .replace(/<\/?think>/gi, "")
+        .trim();
+}
+
+// One line per background job, in place of its Thinking Instructions. Each
+// says what the whole reply is; the format itself is in the job's own prompt.
+export const COMPAT_TASK_FORMAT = {
+    storyPlan: "Your entire reply is one <directive></directive> block holding the blueprint in the structure above. Nothing before or after it.",
+    banList: "Your entire reply is the 5 rules, separated by commas. Nothing before or after them.",
+    imageGen: "Your entire reply is the image prompt itself, following the rules above. Nothing before or after it.",
+    npcPortrait: "Your entire reply is the portrait prompt itself. Nothing before or after it.",
+    npcScan: "Your entire reply is the dossiers of the missing NPCs, one after another, in the format above. Nothing before, between or after them.",
+    npcUpdate: "Your entire reply is the <NPC_Update> block, or exactly NO CHANGE. Do not restate anything that is already correct on the record.",
+};
+
+// The Story Tracker, reworded as state data rather than an "internal status
+// report". Same fields, same tag, so the renderer and the parser are unaffected.
+// Only used when the tracker template has not been customised.
+export const COMPAT_TRACKER = `<Story_Tracker>
+At the END of your response, add this tracker with the current state of the story against the active blueprint. It is data for the interface and is hidden from the reader.
+
+arc_status: [progressing | nearing_climax | completed | pivoted]
+current_arc: [Name the arc you are actively writing]
+main_event_progress: [How far along the main event is — not started | building | in motion | resolving]
+sub_event_advanced: [Which numbered sub-event you just advanced or set up in this response]
+npc_actions: [Which NPCs acted on their agenda in this response and what they did]
+simmering_threads: [2-3 background tensions you are keeping warm]
+hidden_state: [NPC secrets and motives that {{user}} does not know yet]
+next_beat: [What sub-event or NPC action you intend to steer toward next]
+</Story_Tracker>`;

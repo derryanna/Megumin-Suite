@@ -26,6 +26,7 @@ import { memGetRelevantVaultEntries } from "../features/memory/index.js";
 import { meguminRollD20s } from "../utils/dice.js";
 import { meguminOverridableSlots, meguminSlotIsLive, meguminModuleTrigger } from "../../data/slots.js";
 import { resolveSlot } from "../core/sharedFragments.js";
+import { noVisibleReasoning, compatCriteria, COMPAT_THINK_WRAPPER, COMPAT_TRACKER } from "./compat.js";
 
 export function buildBaseDict(isTokenCount = false) {
     const dict = {};
@@ -314,8 +315,11 @@ export function buildBaseDict(isTokenCount = false) {
     }
 
     // NEW: Inject Thinking Effort to the absolute top of whatever [[COT]] is currently active
+    // Skipped in compat mode: there is no written thinking to cap, and the
+    // sentence itself asks for some.
+    const compat = noVisibleReasoning();
     let effort = localProfile.thinkEffort || "unspecified";
-    if (effort !== "unspecified" && dict["[[COT]]"]) {
+    if (!compat && effort !== "unspecified" && dict["[[COT]]"]) {
         let words = effort === "custom" ? (localProfile.customThinkEffort || "100") : effort;
         dict["[[COT]]"] = `Your Thinking must not be more than ${words} words.\n\n` + dict["[[COT]]"];
     }
@@ -331,7 +335,14 @@ export function buildBaseDict(isTokenCount = false) {
     // an edited wrapper was silently discarded: the override pass runs far
     // above, and this line overwrote whatever it had put there. The add-on
     // could be edited and saved and never did anything.
-    if (localProfile.cotEnabled !== false && dict["[[COT]]"]) {
+    if (compat && localProfile.cotEnabled !== false && (activeEngine?.compatCot || dict["[[COT]]"])) {
+        // The Thinking Tags wrapper (shared or engine) is bypassed on purpose:
+        // whatever it says, its job is to put the script inside a written
+        // <think> block. An engine may carry a hand-adapted `compatCot`.
+        const criteria = activeEngine?.compatCot || compatCriteria(dict["[[COT]]"]);
+        dict["[[THINK]]"] = COMPAT_THINK_WRAPPER.split("{Thinking}").join(criteria);
+        dict["[[COT]]"] = "";
+    } else if (localProfile.cotEnabled !== false && dict["[[COT]]"]) {
         const defaultWrapper = localProfile.thinkingV2
             ? "<think>\n<think>\n<think>\n{Thinking}\n</think>"
             : "<think>\n{Thinking}\n</think>";
@@ -370,7 +381,8 @@ export function buildBaseDict(isTokenCount = false) {
         dict["[[storyplan]]"] = finalInjection.trim();
 
         // The refined tracker block you asked for
-        const trackerTemplate = (spCustom && spCustom.trackerTemplate) || DEFAULT_PROMPTS.storyPlan.trackerTemplate;
+        const trackerTemplate = (spCustom && spCustom.trackerTemplate)
+            || (compat ? COMPAT_TRACKER : DEFAULT_PROMPTS.storyPlan.trackerTemplate);
         dict["[[storytracker]]"] = trackerTemplate;
     } else {
         dict["[[storyplan]]"] = "";
@@ -455,6 +467,9 @@ export function buildBaseDict(isTokenCount = false) {
     if (localProfile.thinkingV2 && dict["[[prefill]]"]) {
         dict["[[prefill]]"] = dict["[[prefill]]"].replace(/\n<think>[\s\S]*/, "\n<think>\n<think>");
     }
+    // A prefill opens a <think> in the model's mouth, and the models this mode
+    // is for reject a prefill outright anyway.
+    if (compat) dict["[[prefill]]"] = "";
 
     if (dict["[[cyoa]]"]) dict["[[cyoa2]]"] = "[CYOA block here]"; else dict["[[cyoa2]]"] = "";
     if (dict["[[infoblock]]"]) dict["[[infoblock2]]"] = "[World state block here]"; else dict["[[infoblock2]]"] = "";
