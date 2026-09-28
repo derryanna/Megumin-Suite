@@ -1,6 +1,8 @@
 > [!NOTE]
 > **This is a fork** of [Megumin Suite](https://github.com/Arif-salah/Megumin-Suite) by Arif-salah (KazumaONIISAN), shared under the same [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/) terms. Everything below the note is the original README. What this fork changes is described here.
 >
+> 🇷🇺 **Русская версия и установка — [внизу](#ru).**
+>
 > ### Chain of Thought as a checklist
 >
 > Several newer models decline requests that ask them to write their reasoning into the reply: Claude Opus 5.5 and the Fable class, and recent Gemini models behave the same way. Claude returns a refusal (category `reasoning_extraction`), and many proxies pass these on as a generic error. Megumin's engines asked for exactly that: a written thinking block before every reply, and a written analysis before every background job.
@@ -9,7 +11,7 @@
 >
 > **You can see the checklist.** Every reply opens with a short `<checklist>`: one line per item, a few words and ✓, or ✗ when the item has no place in the scene. No reasoning, only marks. It is folded into a collapsed **✅ Checklist** box above the reply and kept out of the prompt, so old checklists never pile up in the context. Two regex scripts do this, *Checklist box* and *Checklist cleanup*, and the extension adds them to your global Regex list on first load. There is no preset to re-import. If you delete or disable them, they stay that way.
 >
-> In a first test, Claude Opus 5.5 and Gemini 3.8 Flash both opened the reply with the checklist, and neither declined it.
+> In a first test, Claude Opus 5.5 and Gemini 3.8 Flash both opened the reply with the checklist, and neither declined it. The lines come out in the language set in Megumin.
 >
 > Rewritten: the V10 scripts (Ukiyo, Shura and their Cap versions), all five V9 (Mirage, Lite, Director, Immersion, Hybrid), both V8 (Fusion, standard), all three V7 (V7, V7.5, Lite), and V1/V2 English, the Chain of Thought that V4.2 Balance runs on. They live in `data/cot/checklists.js`; the original scripts are untouched.
 >
@@ -20,6 +22,17 @@
 > - **Output formats don't change**, apart from the new `<checklist>` at the top. `<directive>`, `<New_NPC>`, `<NPC_Update>`, the `<Blocks>` envelope and raw image prompts all stay the same, so every parser and card keeps working.
 >
 > Not rewritten yet: V6, the V1/V2 translations and other non-English scripts, and custom engines' own Chain of Thought. These go out as written, minus their think tags and length rules.
+>
+> ### Installing this fork
+>
+> 1. If the original Megumin Suite is installed, delete it first: **Extensions → Manage extensions**, then delete Megumin Suite. Your profiles and engines are kept: they live in SillyTavern's settings, not in the extension folder.
+> 2. **Extensions → Install extension**, paste `https://github.com/derryanna/Megumin-Suite` and install.
+> 3. Refresh the page.
+> 4. The presets are the same as the original's. If you already have *Megumin Suite V10 Universal* or *Cache Friendly* imported, keep it. If not, import one from [`Presets/`](Presets) as in the original steps below.
+> 5. In the preset's *Output RULES*, check that the line under *"your thinking steps:"* is `[[THINK]]` in capitals. `[[Think]]` is not picked up, and then the checklist never reaches the model.
+> 6. Keep **Enable Chain of Thought** on (PRESETS & COT → Reasoning (CoT)): the checklist is carried by it.
+>
+> After the first reply there is a **✅ Checklist** box above it, and *Checklist box* and *Checklist cleanup* show up under the global scripts in **Extensions → Regex**. The **Update** button in Extensions pulls from this fork.
 
 <div align="center">
 
@@ -320,3 +333,42 @@ Megumin Suite is free and always will be. If it saved you hours of prompt engine
 ⭐ *Not in a position to donate? Starring the repo and sharing it helps just as much.*
 
 </div>
+
+---
+
+<a id="ru"></a>
+
+## 🇷🇺 По-русски: что меняет этот форк
+
+Это форк [Megumin Suite](https://github.com/Arif-salah/Megumin-Suite) от Arif-salah (KazumaONIISAN) на тех же условиях, [CC BY-NC 4.0](https://creativecommons.org/licenses/by-nc/4.0/deed.ru). Выше идёт оригинальный README на английском, а здесь описано, что изменено в форке.
+
+### Chain of Thought как чеклист
+
+Часть новых моделей отказывается писать свои рассуждения прямо в ответ. Так ведут себя Claude Opus 5.5, модели класса Fable и свежие Gemini. Claude возвращает отказ (категория `reasoning_extraction`), а многие прокси показывают его как непонятную ошибку. Движки Megumin просили как раз этого: блок размышлений перед каждым ответом и письменный разбор перед каждой фоновой задачей.
+
+В этом форке **Chain of Thought каждого движка переписан в чеклист** для готового ответа. Приоритеты движка те же, только вместо шагов «подумай и распиши» теперь «чему должна соответствовать сцена». Это включено всегда и одинаково работает на всех моделях, отдельной настройки нет.
+
+**Чеклист видно.** Каждый ответ начинается с короткого `<checklist>`: по строке на пункт, пара слов и ✓, или ✗, если пункту в этой сцене не место. Никаких рассуждений, только отметки. Чеклист сворачивается в спойлер **✅ Checklist** над ответом и вырезается из промпта, так что старые чеклисты не копятся в контексте. Это делают два regex-скрипта, *Checklist box* и *Checklist cleanup*. Расширение само добавляет их в глобальные Regex при первом запуске, переимпортировать пресет не нужно. Если удалить или выключить скрипты, расширение не станет возвращать их обратно.
+
+В первом тесте Claude Opus 5.5 и Gemini 3.8 Flash обе начали ответ с чеклиста, и ни одна не отказала. Пункты пишутся на языке, выбранном в Megumin.
+
+Переписаны: V10 (Ukiyo, Shura и их Cap-версии), все пять V9 (Mirage, Lite, Director, Immersion, Hybrid), оба V8 (Fusion и обычный), все три V7 (V7, V7.5, Lite), а также V1/V2 English, то есть Chain of Thought, на котором работает V4.2 Balance. Они лежат в `data/cot/checklists.js`, оригинальные скрипты не тронуты.
+
+Кроме того:
+- **Никаких префиллов**, обёртка Thinking Tags не используется. Заголовок пресета *«your thinking steps:»* превращается в *«Scene criteria:»*.
+- **Фоновые задачи** (Story Director, Ban List, Image Gen, портрет NPC, скан NPC, обновление NPC, сводка памяти) пропускают свои *Thinking Instructions* и префиллы. Каждая получает одну строку о том, что должно быть в её ответе.
+- **Story Tracker:** стандартный шаблон переписан как данные о состоянии, а не «внутренний отчёт». Свой шаблон используется как есть.
+- **Форматы вывода не меняются**, кроме нового `<checklist>` в начале ответа. `<directive>`, `<New_NPC>`, `<NPC_Update>`, конверт `<Blocks>` и промпты для картинок прежние, так что все парсеры и карточки работают.
+
+Пока не переписаны: V6, переводы V1/V2 и другие неанглийские скрипты, а также собственные Chain of Thought кастомных движков. Они уходят как написаны, только без think-тегов и ограничений длины.
+
+### Как установить
+
+1. Если у вас стоит оригинальный Megumin Suite, сначала удалите его: **Extensions → Manage extensions**, затем удалите Megumin Suite. Профили и движки сохранятся: они лежат в настройках SillyTavern, а не в папке расширения.
+2. **Extensions → Install extension**, вставьте `https://github.com/derryanna/Megumin-Suite` и установите.
+3. Обновите страницу.
+4. Пресеты те же, что у оригинала. Если *Megumin Suite V10 Universal* или *Cache Friendly* уже импортирован, оставьте его. Если нет, импортируйте пресет из папки [`Presets/`](Presets) по оригинальной инструкции выше.
+5. В *Output RULES* пресета проверьте, что под строкой *«your thinking steps:»* стоит `[[THINK]]` заглавными буквами. `[[Think]]` не подхватывается, и тогда чеклист до модели не доходит.
+6. Не выключайте **Enable Chain of Thought** (PRESETS & COT → Reasoning (CoT)): чеклист идёт через него.
+
+После первого ответа над ним появится спойлер **✅ Checklist**, а в **Extensions → Regex** среди глобальных скриптов появятся *Checklist box* и *Checklist cleanup*. Кнопка **Update** в Extensions обновляет расширение из этого форка.
