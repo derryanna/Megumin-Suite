@@ -71,6 +71,7 @@ import {
     applyTabKeysToAllProfiles, syncPromptsGlobally,
 } from "./src/core/sync.js";
 import { cleanLegacySettings, migrateRenamedTabs, migrateUtilityPrefillFlag } from "./src/core/migrations.js";
+import { installChecklistRegex } from "./src/engine/checklistRegex.js";
 import { meguminCompactStoredPrompts } from "./src/prompts/storage.js";
 import {
     normalizeBlockBody,
@@ -238,6 +239,7 @@ jQuery(async () => {
         cleanLegacySettings();
         migrateRenamedTabs();
         migrateUtilityPrefillFlag();
+        installChecklistRegex();
         initSidePanel({ profileGetter: () => localProfile });
         const h = await $.get(`${extensionFolderPath}/example.html`);
         $("body").append(h);

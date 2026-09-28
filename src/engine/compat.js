@@ -9,8 +9,9 @@
 //   - the roleplay prompt gets each engine's Chain of Thought rewritten as a
 //     checklist (data/cot/checklists.js), and the reply opens with a short
 //     <checklist> of marks, one line per item, instead of a <think> block to
-//     fill in. No prefill. The preset's "Checklist box" regex folds it into a
-//     box and "Checklist cleanup" keeps it out of the prompt;
+//     fill in. No prefill. Two regex scripts that the extension adds to the
+//     global list (src/engine/checklistRegex.js) fold it into a box and keep
+//     it out of the prompt;
 //   - every background job (Story Director, Ban List, Image Gen, NPC portrait,
 //     NPC scan, NPC update, memory summary) drops its "Thinking Instructions"
 //     and its prefill, and gets a single line that says what the reply contains.

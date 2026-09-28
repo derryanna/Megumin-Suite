@@ -7,9 +7,9 @@
 >
 > In this fork, **each engine's Chain of Thought is rewritten as a checklist** for the finished reply. The engine's priorities stay the same, but the form is "what the scene must hold to" instead of steps to think or write out. This is always on and works the same on every model; there is no setting.
 >
-> **You can see the checklist.** Every reply opens with a short `<checklist>`: one line per item, a few words and ✓, or ✗ when the item has no place in the scene. No reasoning, only marks. The preset folds it into a collapsed **✅ Checklist** box above the reply and keeps it out of the prompt, so old checklists never pile up in the context. Both come from two regex scripts in the preset, *Checklist box* and *Checklist cleanup*; **re-import the preset** to get them.
+> **You can see the checklist.** Every reply opens with a short `<checklist>`: one line per item, a few words and ✓, or ✗ when the item has no place in the scene. No reasoning, only marks. It is folded into a collapsed **✅ Checklist** box above the reply and kept out of the prompt, so old checklists never pile up in the context. Two regex scripts do this, *Checklist box* and *Checklist cleanup*, and the extension adds them to your global Regex list on first load. There is no preset to re-import. If you delete or disable them, they stay that way.
 >
-> Not tested live on Opus 5.5 yet. If it declines the checklist, that is the first thing to report.
+> In a first test, Claude Opus 5.5 and Gemini 3.8 Flash both opened the reply with the checklist, and neither declined it.
 >
 > Rewritten: the V10 scripts (Ukiyo, Shura and their Cap versions), all five V9 (Mirage, Lite, Director, Immersion, Hybrid), both V8 (Fusion, standard), all three V7 (V7, V7.5, Lite), and V1/V2 English, the Chain of Thought that V4.2 Balance runs on. They live in `data/cot/checklists.js`; the original scripts are untouched.
 >
