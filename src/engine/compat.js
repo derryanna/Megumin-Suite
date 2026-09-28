@@ -1,7 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // No Visible Reasoning.
 //
-// Some models (Claude Opus 5.5, the Fable class) decline a request that asks
+// Several newer models (Claude Opus 5.5, the Fable class, recent Gemini) decline a request that asks
 // them to write their reasoning into the reply: the API answers with a refusal
 // (category "reasoning_extraction"), and many proxies pass that on as a plain
 // 400. Those models always think internally anyway, and every other model

@@ -3,7 +3,7 @@
 >
 > ### Chain of Thought as a checklist
 >
-> Some newer models, such as Claude Opus 5.5 and the Fable class, decline requests that ask them to write their reasoning into the reply. The API returns a refusal (category `reasoning_extraction`), and many proxies pass it on as a generic 400. Megumin's engines asked for exactly that: a written thinking block before every reply, and a written analysis before every background job.
+> Several newer models decline requests that ask them to write their reasoning into the reply: Claude Opus 5.5 and the Fable class, and recent Gemini models behave the same way. Claude returns a refusal (category `reasoning_extraction`), and many proxies pass these on as a generic error. Megumin's engines asked for exactly that: a written thinking block before every reply, and a written analysis before every background job.
 >
 > In this fork, **each engine's Chain of Thought is rewritten as a checklist** for the finished reply. The engine's priorities stay the same, but the form is "what the scene must hold to" instead of steps to think or write out. The model knows what matters to the user and checks it on its own. This is always on and works the same on every model; there is no setting.
 >
