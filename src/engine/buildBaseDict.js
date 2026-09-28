@@ -338,8 +338,11 @@ export function buildBaseDict(isTokenCount = false) {
     if (compat && localProfile.cotEnabled !== false && (activeEngine?.compatCot || dict["[[COT]]"])) {
         // The Thinking Tags wrapper (shared or engine) is bypassed on purpose:
         // whatever it says, its job is to put the script inside a written
-        // <think> block. An engine may carry a hand-adapted `compatCot`.
-        const criteria = activeEngine?.compatCot || compatCriteria(dict["[[COT]]"]);
+        // <think> block. An engine may carry a hand-adapted `compatCot`, and a
+        // built-in chain of thought its own `compat` text — used only while the
+        // script in the dictionary is still that built-in one, unedited.
+        const cotCompat = (modData && modData.compat && dict["[[COT]]"] === modData.content) ? modData.compat : null;
+        const criteria = activeEngine?.compatCot || cotCompat || compatCriteria(dict["[[COT]]"]);
         dict["[[THINK]]"] = COMPAT_THINK_WRAPPER.split("{Thinking}").join(criteria);
         dict["[[COT]]"] = "";
     } else if (localProfile.cotEnabled !== false && dict["[[COT]]"]) {

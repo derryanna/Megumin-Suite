@@ -7,12 +7,12 @@
 >
 > **Global Settings → Behaviour → No Visible Reasoning** (off by default). When it is on:
 >
-> - **Roleplay replies:** the engine's Chain of Thought is sent as criteria for the finished reply, not as a `<think>` block to fill in. The Thinking Tags wrapper and the thinking word limit are skipped, the prefill is dropped, and the preset heading *"your thinking steps:"* becomes *"Scene criteria:"*.
+> - **Roleplay replies:** the engine's Chain of Thought is sent as criteria for the finished reply, not as a `<think>` block to fill in. The Thinking Tags wrapper, the profile's thinking word limit and the V10 "Thinking Cap" ceiling are skipped (depth is the model's effort setting's job here), the prefill is dropped, and the preset heading *"your thinking steps:"* becomes *"Scene criteria:"*.
 > - **Background jobs** (Story Director, Ban List, Image Gen, NPC portrait, NPC scan, NPC update, memory summary): their *Thinking Instructions* and prefills are skipped. Each job gets one line saying what its whole reply contains.
 > - **Story Tracker:** the default template is reworded as state data instead of an "internal status report". A customised template is used as-is.
 > - **Output formats don't change.** `<directive>`, `<New_NPC>`, `<NPC_Update>`, the `<Blocks>` envelope and raw image prompts all stay the same, so every parser and card keeps working.
 >
-> The V10 engines (Shura, Ukiyo) already read as criteria and work well in this mode. The older V7–V9 "writer's room" scripts describe a drafting process rather than criteria. They still pass through, but a custom engine meant for these models can set its own `compatCot`: a criteria list used in place of its Chain of Thought when the mode is on.
+> **What is and isn't adapted yet.** The V10 scripts (Shura, Ukiyo, and their Cap variants) need nothing beyond the changes above. The older scripts are processes rather than criteria. V9 Immersion, for example, still asks for a full draft first, and V9 Hybrid is a writers' room. They pass through with only the think tags and reasoning headings removed, and none has been adapted or tested in this mode. A custom engine can carry its own `compatCot`, a criteria list used in place of its Chain of Thought while the mode is on; no built-in engine ships one yet.
 >
 > Nothing is sent differently when the setting is off.
 

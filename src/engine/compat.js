@@ -48,7 +48,11 @@ export const COMPAT_THINK_HEADING = "$1Scene criteria:";
 export function compatCriteria(cot) {
     if (!cot) return "";
     return cot
-        .replace(/^([ \t]*#+[ \t]*)(THINKING|Reasoning Process)[ \t]*:?[ \t]*$/gim, "$1Criteria:")
+        // The V10 "Thinking Cap" block and its lead-in, when a custom engine
+        // carries a copy of them (the built-in capped scripts have `compat`).
+        .replace(/^[ \t]*HARD LIMITS on the thinking phase:[\s\S]*?skip deliberation entirely and write\.[ \t]*\r?\n?/im, "")
+        .replace(/^[ \t]*\*\*Thinking — keep it short, then write\.\*\*[^\n]*\r?\n[^\n]*\r?\n?/im, "")
+        .replace(/^([ \t]*#+[ \t]*)(THINKING|Reasoning Process|Plan)[ \t]*:?[ \t]*$/gim, "$1Criteria:")
         .replace(/^([ \t]*)\[THINKING STEPS\]/gim, "$1[CRITERIA]")
         .replace(/^[^\n]*(Minimum total thinking length|All thinking must be written in|Your Thinking must not be more than)[^\n]*\r?\n?/gim, "")
         .replace(/^[ \t]*<\/?think>[ \t]*\r?\n?/gim, "")
