@@ -335,15 +335,22 @@ export function buildBaseDict(isTokenCount = false) {
     // an edited wrapper was silently discarded: the override pass runs far
     // above, and this line overwrote whatever it had put there. The add-on
     // could be edited and saved and never did anything.
-    if (compat && localProfile.cotEnabled !== false && (activeEngine?.compatCot || dict["[[COT]]"])) {
-        // The Thinking Tags wrapper (shared or engine) is bypassed on purpose:
-        // whatever it says, its job is to put the script inside a written
-        // <think> block. An engine may carry a hand-adapted `compatCot`, and a
-        // built-in chain of thought its own `compat` text — used only while the
-        // script in the dictionary is still that built-in one, unedited.
+    const ownChecklist = (dict["[[COT_NVR]]"] || "").trim() ? dict["[[COT_NVR]]"] : "";
+    const ownFrame = (dict["[[THINK_NVR]]"] || "").trim() ? dict["[[THINK_NVR]]"] : "";
+    dict["[[COT_NVR]]"] = "";
+    dict["[[THINK_NVR]]"] = "";
+    if (compat && localProfile.cotEnabled !== false && (ownChecklist || dict["[[COT]]"])) {
+        // The Thinking Tags are not used here: whatever they say, their job is
+        // to put the script inside a written <think> block. The Checklist Frame
+        // slot takes their place. The checklist is, in order: the engine's own
+        // "Checklist (No Visible Reasoning)", a built-in chain of thought's
+        // `compat` text (only while that script is unedited), or the Chain of
+        // Thought itself with its think tags and length rules taken out.
         const cotCompat = (modData && modData.compat && dict["[[COT]]"] === modData.content) ? modData.compat : null;
-        const criteria = activeEngine?.compatCot || cotCompat || compatCriteria(dict["[[COT]]"]);
-        dict["[[THINK]]"] = COMPAT_THINK_WRAPPER.split("{Thinking}").join(criteria);
+        const criteria = ownChecklist || cotCompat || compatCriteria(dict["[[COT]]"]);
+        let frame = ownFrame || COMPAT_THINK_WRAPPER;
+        if (!frame.includes("{Thinking}")) frame += "\n{Thinking}";
+        dict["[[THINK]]"] = frame.split("{Thinking}").join(criteria);
         dict["[[COT]]"] = "";
     } else if (localProfile.cotEnabled !== false && dict["[[COT]]"]) {
         const defaultWrapper = localProfile.thinkingV2

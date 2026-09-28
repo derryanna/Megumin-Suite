@@ -12,7 +12,14 @@
 > - **Story Tracker:** the default template is reworded as state data instead of an "internal status report". A customised template is used as-is.
 > - **Output formats don't change.** `<directive>`, `<New_NPC>`, `<NPC_Update>`, the `<Blocks>` envelope and raw image prompts all stay the same, so every parser and card keeps working.
 >
-> **What is and isn't adapted yet.** The V10 scripts (Shura, Ukiyo, and their Cap variants) need nothing beyond the changes above. The older scripts are processes rather than criteria. V9 Immersion, for example, still asks for a full draft first, and V9 Hybrid is a writers' room. They pass through with only the think tags and reasoning headings removed, and none has been adapted or tested in this mode. A custom engine can carry its own `compatCot`, a criteria list used in place of its Chain of Thought while the mode is on; no built-in engine ships one yet.
+> **Bring your own checklist.** Many people use the Chain of Thought as a personal checklist, and everyone has their favourite engine. The mode keeps both. There are two ways to set it up:
+>
+> - **In the engine (Dev Mode).** Each engine gets a **Checklist (No Visible Reasoning)** box, drawn right under its Chain of Thought. Write what the finished reply must satisfy; it is used instead of the Chain of Thought while the mode is on, and ignored when it is off. Leave it empty and the engine's own Chain of Thought is used, minus its think tags, its length rules and the V10 "Thinking Cap". The text around the checklist is the shared **Checklist Frame (No Visible Reasoning)** add-on, editable like Thinking Tags. Keep `{Thinking}` in it, and keep it about the finished reply, not about writing the checking out.
+> - **In your preset.** Keep your checklist in the preset and switch Megumin's Chain of Thought off. The mode then only drops the prefills and the "your thinking steps:" heading, and handles the background jobs.
+>
+> Use one or the other. Both at once sends the checklist twice.
+>
+> The shipped V10 scripts (Shura, Ukiyo and their Cap variants) work unchanged. The older V7–V9 scripts describe a writing process rather than a checklist: V9 Immersion still asks for a full draft first, and V9 Hybrid is a writers' room. They pass through with only the think tags and length rules removed and are untested in this mode. If you use one of those engines, give it a checklist in Dev Mode.
 >
 > Nothing is sent differently when the setting is off.
 
