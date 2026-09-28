@@ -44,6 +44,11 @@ export function meguminCleanChatHistoryText(text) {
     // tracker leaks as badly as a whole one, so cut from it to the end of the text.
     cleaned = cleaned.replace(/<Story_Tracker[^>]*>[\s\S]*$/i, "");
 
+    // The checklist at the top of a reply is marks for the reader, not story.
+    // Only a closed one is cut: it sits before the prose, so cutting an unclosed
+    // one to the end would take the whole scene with it.
+    cleaned = cleaned.replace(/<checklist\b[^>]*>[\s\S]*?<\/checklist\s*>/gi, "");
+
     // The <Blocks> envelope and its named children. Taking the envelope whole
     // handles the ordinary reply in one pass; the children are then stripped
     // individually because nothing guarantees they arrived inside it — a reply

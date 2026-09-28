@@ -3,10 +3,10 @@
 //
 // Each engine's reasoning script, keyed by its CoT id, with the same priorities
 // but a different shape: what the finished reply must hold to, instead of steps
-// to think or write out. Models that decline requests to put their reasoning in
-// the reply (Claude Opus 5.5, the Fable class, recent Gemini) accept these, and every other
-// model reads them the same way. src/engine/compat.js wraps the checklist in a
-// short frame; data/cot/index.js attaches each text to its CoT as `compat`.
+// to think or write out. The reply shows them back as a short list of marks,
+// one line per item, not as written reasoning. src/engine/compat.js wraps the
+// checklist in that frame; data/cot/index.js attaches each text to its CoT as
+// `compat`.
 //
 // The original scripts in v7.js … v10.js and legacy.js are left untouched so
 // upstream changes still merge cleanly. A script with no entry here goes out

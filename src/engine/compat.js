@@ -4,12 +4,13 @@
 // Several newer models (Claude Opus 5.5, the Fable class, recent Gemini) decline a request that asks
 // them to write their reasoning into the reply: the API answers with a refusal
 // (category "reasoning_extraction"), and many proxies pass that on as a plain
-// 400. Those models always think internally anyway, and every other model
-// works just as well from a checklist, so this fork never asks for written
-// thinking:
+// 400. Those models always think internally anyway, so this fork never asks
+// for written thinking. What the reader sees instead is the checklist itself:
 //   - the roleplay prompt gets each engine's Chain of Thought rewritten as a
-//     checklist for the finished reply (data/cot/checklists.js), in a short
-//     frame, instead of a <think> block to fill in, and no prefill;
+//     checklist (data/cot/checklists.js), and the reply opens with a short
+//     <checklist> of marks, one line per item, instead of a <think> block to
+//     fill in. No prefill. The preset's "Checklist box" regex folds it into a
+//     box and "Checklist cleanup" keeps it out of the prompt;
 //   - every background job (Story Director, Ban List, Image Gen, NPC portrait,
 //     NPC scan, NPC update, memory summary) drops its "Thinking Instructions"
 //     and its prefill, and gets a single line that says what the reply contains.
@@ -28,10 +29,16 @@ export function noVisibleReasoning() {
 
 // Replaces the Thinking Tags wrapper. {Thinking} is where the engine's chain of
 // thought lands, exactly as in the normal wrapper.
+//
+// The reply opens with the checklist's marks: a short name and ✓ or ✗ per
+// item, nothing else, so the reader can see that every item was looked at
+// without the model writing out any reasoning.
 export const COMPAT_THINK_WRAPPER =
-    "Hold the finished reply to the criteria below. They describe the scene you write; they are not a section to write out.\n\n"
+    "The scene you write holds to the criteria below.\n\n"
     + "{Thinking}\n\n"
-    + "Your reply is the scene itself, followed by the blocks these rules ask for, and nothing else.";
+    + "Open the reply with a <checklist> block: "
+    + "one line per criterion, a name of two to four words and ✓, or ✗ when it has no place in this scene. "
+    + "Names and marks only. Close it with </checklist>, then write the scene, followed by the blocks these rules ask for.";
 
 // The preset's heading over [[THINK]]. Renamed in compat mode so the prompt no
 // longer asks for "thinking steps"; dropped when there is nothing under it.

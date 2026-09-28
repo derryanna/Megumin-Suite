@@ -406,7 +406,8 @@ export const BLOCK_VISIBILITY_CHOICES = [
 // silently instead of failing loudly.
 export const RESERVED_BLOCK_TAGS = [
     "blocks", "details", "summary", "think", "thinking", "gametxt", "updatevariable",
-    "combat_log", "location", "options", "disclaimer", "div", "span", "img", "p", "br"
+    "combat_log", "location", "options", "disclaimer", "div", "span", "img", "p", "br",
+    "checklist"
 ];
 
 export function blockTagFromName(name) {
